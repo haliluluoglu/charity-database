@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.MainController">
+   <children>
+      <ScrollPane layoutY="199.0" prefHeight="401.0" prefWidth="800.0" />
+      <Button fx:id="addButton" layoutX="241.0" layoutY="23.0" mnemonicParsing="false" text="ADD" />
+      <Button fx:id="deleteButton" layoutX="332.0" layoutY="23.0" mnemonicParsing="false" text="DELETE" />
+      <Button fx:id="editButton" layoutX="439.0" layoutY="23.0" mnemonicParsing="false" text="EDIT" />
+      <Label fx:id="label" layoutX="213.0" layoutY="125.0" text="Label" />
+      <MenuButton fx:id="menuButton" layoutX="40.0" layoutY="23.0" mnemonicParsing="false" onMouseClicked="#menuButtonOnAction" text="Tables">
+        <items>
+          <MenuItem fx:id="item1" mnemonicParsing="false" onAction="#menuButtonOnAction" text="Needy" />
+          <MenuItem mnemonicParsing="false" text="Donators" />
+        </items>
+      </MenuButton>
+   </children>
+</AnchorPane>
