@@ -1,0 +1,13 @@
+
+
+.main-btn-active{ -fx-text-fill:red; }
+.main-btn{ -fx-background-repeat:no-repeat; -fx-background-position:4px center; -fx-padding:0 0 0 24px; -fx-font-weight:bold;  -fx-font-size:12px; -fx-background-size:20px 20px;}
+
+.btn-needies{ -fx-background-image:url('/images/needies.png'); }
+.btn-donator{ -fx-background-image:url('/images/donator.png'); }
+.btn-membership{ -fx-background-image:url('/images/membership.png'); }
+.btn-employee{ -fx-background-image:url('/images/employee.png'); }
+.btn-department{ -fx-background-image:url('/images/department.png'); }
+.btn-accounting{ -fx-background-image:url('/images/accounting.png'); }
+.btn-inventory{ -fx-background-image:url('/images/inventory.png'); }
+

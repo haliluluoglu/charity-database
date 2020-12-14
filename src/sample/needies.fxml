@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="516.0" prefWidth="784.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.NeediesController">
+   <children>
+      <Label layoutX="25.0" layoutY="16.0" text="First Name" />
+      <TextField fx:id="txtFName" layoutX="112.0" layoutY="12.0" prefHeight="26.0" prefWidth="138.0" />
+      <Label layoutX="25.0" layoutY="44.0" text="Last Name" />
+      <Label layoutX="26.0" layoutY="72.0" text="Identity No" />
+      <TextField fx:id="txtLName" layoutX="112.0" layoutY="40.0" prefHeight="26.0" prefWidth="138.0" />
+      <TextField fx:id="txtIdentityNo" layoutX="112.0" layoutY="68.0" prefHeight="26.0" prefWidth="138.0" />
+      <Label layoutX="26.0" layoutY="101.0" text="Marital Status" />
+      <Label layoutX="262.0" layoutY="15.0" text="Gender" />
+      <Label layoutX="262.0" layoutY="43.0" text="Birthday" />
+      <Label layoutX="262.0" layoutY="72.0" text="Child Amount" />
+      <TextField fx:id="txtBirthDay" layoutX="337.0" layoutY="39.0" prefHeight="26.0" prefWidth="138.0" />
+      <Label layoutX="264.0" layoutY="100.0" text="Income" />
+      <Label layoutX="500.0" layoutY="16.0" text="Address" />
+      <TextField fx:id="txtChildAmount" layoutX="337.0" layoutY="68.0" prefHeight="26.0" prefWidth="138.0" />
+      <TextField fx:id="txtIncome" layoutX="337.0" layoutY="96.0" prefHeight="26.0" prefWidth="138.0" />
+      <TextField fx:id="txtAddress" layoutX="589.0" layoutY="12.0" prefHeight="26.0" prefWidth="138.0" />
+      <Label layoutX="500.0" layoutY="44.0" text="Phone Number" />
+      <TextField fx:id="txtPhone" layoutX="589.0" layoutY="41.0" prefHeight="26.0" prefWidth="138.0" />
+      <Label layoutX="500.0" layoutY="71.0" text="Email" />
+      <TextField fx:id="txtMail" layoutX="589.0" layoutY="68.0" prefHeight="26.0" prefWidth="138.0" />
+      <ScrollPane layoutY="167.0" prefHeight="348.0" prefWidth="784.0">
+         <content>
+            <TableView fx:id="tblNeedies" prefHeight="402.0" prefWidth="810.0">
+               <columns>
+                  <TableColumn fx:id="colFName" prefWidth="87.0" text="First Name" />
+                  <TableColumn fx:id="colLName" prefWidth="88.0" text="Last Name" />
+                  <TableColumn fx:id="colIdentityNo" text="Identity No" />
+                  <TableColumn fx:id="colMaritalStatus" prefWidth="87.0" text="Marital Status" />
+                  <TableColumn fx:id="colGender" prefWidth="53.0" text="Gender" />
+                  <TableColumn fx:id="colBirthDate" prefWidth="72.0" text="Birth Date" />
+                  <TableColumn fx:id="colChildAmount" prefWidth="58.0" text="Childs" />
+                  <TableColumn fx:id="colIncome" prefWidth="75.0" text="Income" />
+                  <TableColumn fx:id="colPhoneNumber" prefWidth="75.0" text="Phone" />
+                  <TableColumn fx:id="colEMail" prefWidth="75.0" text="Mail" />
+                  <TableColumn fx:id="colAddress" prefWidth="75.0" text="Address" />
+               </columns>
+            </TableView>
+         </content>
+      </ScrollPane>
+      <Button fx:id="btnSave" layoutX="589.0" layoutY="105.0" mnemonicParsing="false" onAction="#saveNeedyForm" prefHeight="25.0" prefWidth="138.0" text="Save" />
+      <ChoiceBox fx:id="cbMaritalStatus" layoutX="112.0" layoutY="97.0" prefHeight="25.0" prefWidth="138.0">
+         <items>
+            <FXCollections fx:factory="observableArrayList">
+               <String fx:value="Single" />
+               <String fx:value="Married" />
+               <String fx:value="Widowed" />
+               <String fx:value="Divorced" />
+            </FXCollections>
+         </items>
+      </ChoiceBox>
+      <ChoiceBox fx:id="cbGender" layoutX="337.0" layoutY="11.0" prefHeight="25.0" prefWidth="138.0">
+         <items>
+            <FXCollections fx:factory="observableArrayList">
+               <String fx:value="Female" />
+               <String fx:value="Male" />
+            </FXCollections>
+         </items>
+      </ChoiceBox>
+   </children>
+</AnchorPane>
