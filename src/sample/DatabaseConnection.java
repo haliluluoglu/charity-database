@@ -9,13 +9,12 @@ public class DatabaseConnection {
 
     public Connection getConnection()
     {
-        String url="jdbc:postgresql://localhost:5432/charity-database";
-        String databaseName="charity-database";
+        String url="jdbc:postgresql://localhost:5432/charity_Db";
         String username="postgres";
         String password="123456";
 
         try {
-            connection= DriverManager.getConnection(url,username,password);
+            connection= DriverManager.getConnection(url, username, password);
         }
         catch(Exception e)
         {

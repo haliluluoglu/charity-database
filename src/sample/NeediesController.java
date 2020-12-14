@@ -108,6 +108,7 @@ public class NeediesController implements Initializable{
 
     @Override
     public  void  initialize(URL location, ResourceBundle resources){
+
         loadTable(false);
     }
 
@@ -279,7 +280,7 @@ public class NeediesController implements Initializable{
 
     private ObservableList<Needy> getNeedyList(Boolean filter){
         ObservableList<Needy> needies = FXCollections.observableArrayList();
-        Connection conn= getConnection();
+        Connection conn= new DatabaseConnection().getConnection();
 
         String query= "SELECT * FROM needy ";
 
@@ -362,24 +363,12 @@ public class NeediesController implements Initializable{
 
     private  void executeQuery(String query){
         try{
-            Connection conn= getConnection();
+            Connection conn= new DatabaseConnection().getConnection();
             Statement st=conn.createStatement();
             st.executeUpdate(query);
         }catch (Exception ex){
             System.out.println("Error:" +ex.getMessage());
         }
-    }
-
-    private Connection getConnection(){
-        Connection conn;
-        try{
-            conn= DriverManager.getConnection("jdbc:postgresql://localhost:5432/charity_Db", "postgres", "123456");
-            return  conn;
-        }catch (Exception ex){
-            System.out.println("Err:"+ex.getMessage());
-            return null;
-        }
-
     }
 
     private class EditButtonCell extends TableCell<Needy, Boolean> {
