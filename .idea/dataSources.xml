@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="charity-database@localhost" uuid="86db63aa-b15e-41a1-81ac-0f367bca5e75">
+    <data-source source="LOCAL" name="charity_Db@localhost" uuid="98dd75ef-c942-43ae-9faf-610dcd489144">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5432/charity-database</jdbc-url>
+      <jdbc-url>jdbc:postgresql://localhost:5432/charity_Db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

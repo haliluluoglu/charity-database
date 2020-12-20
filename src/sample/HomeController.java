@@ -40,7 +40,7 @@ public class HomeController {
     @FXML
     Pane paneMain;
 
-    public void loadNeedyAction(ActionEvent event) throws Exception {
+    public void loadAllAction(ActionEvent event) throws Exception {
         if(activeTab!=null){
             deactivateTabClass();
             clearPane();
@@ -61,29 +61,46 @@ public class HomeController {
         paneMain.getChildren().remove(0);
     }
     private void loadNeedy() throws Exception {
-
         Pane newLoaded= FXMLLoader.load(getClass().getResource("needies.fxml"));
         paneMain.getChildren().add(newLoaded);
         activeTab="needy";
-
     }
 
     private void loadDonator() throws Exception {
-
+        Pane newLoaded= FXMLLoader.load(getClass().getResource("donators.fxml"));
+        paneMain.getChildren().add(newLoaded);
+        activeTab="donator";
     }
+
+
     private void loadMember() throws Exception {
+        Pane newLoaded= FXMLLoader.load(getClass().getResource("members.fxml"));
+        paneMain.getChildren().add(newLoaded);
+        activeTab="member";
 
     }
     private void loadEmployee() throws Exception {
+        Pane newLoaded= FXMLLoader.load(getClass().getResource("employee.fxml"));
+        paneMain.getChildren().add(newLoaded);
+        activeTab="employee";
 
     }
     private void loadDepartment() throws Exception {
+        Pane newLoaded= FXMLLoader.load(getClass().getResource("department.fxml"));
+        paneMain.getChildren().add(newLoaded);
+        activeTab="department";
 
     }
     private void loadInventory() throws Exception {
+        Pane newLoaded= FXMLLoader.load(getClass().getResource("inventory.fxml"));
+        paneMain.getChildren().add(newLoaded);
+        activeTab="inventory";
 
     }
     private void loadAccounting() throws Exception {
+        Pane newLoaded= FXMLLoader.load(getClass().getResource("accounting.fxml"));
+        paneMain.getChildren().add(newLoaded);
+        activeTab="account";
 
     }
 

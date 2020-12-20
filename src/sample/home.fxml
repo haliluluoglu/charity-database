@@ -25,20 +25,20 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="btnLoadNeedy" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadNeedyAction" stylesheets="@application.css" text="Needies" textAlignment="CENTER" GridPane.columnIndex="0">
+            <Button fx:id="btnLoadNeedy" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadAllAction" stylesheets="@application.css" text="Needies" textAlignment="CENTER" GridPane.columnIndex="0">
                <styleClass>
                   <String fx:value="main-btn" />
                   <String fx:value="btn-needies" />
                </styleClass>
             </Button>
-            <Button fx:id="btnLoadDonator" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" stylesheets="@application.css" text="Donators" textAlignment="CENTER" GridPane.columnIndex="1">
+            <Button fx:id="btnLoadDonator" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadAllAction" stylesheets="@application.css" text="Donators" textAlignment="CENTER" GridPane.columnIndex="1">
                <styleClass>
                   <String fx:value="main-btn" />
                   <String fx:value="btn-donator" />
                </styleClass>
 
             </Button>
-             <Button fx:id="btnLoadMember" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" stylesheets="@application.css" text="Members" textAlignment="CENTER" GridPane.columnIndex="2">
+             <Button fx:id="btnLoadMember" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadAllAction" stylesheets="@application.css" text="Members" textAlignment="CENTER" GridPane.columnIndex="2">
                  <styleClass>
                      <String fx:value="main-btn" />
                      <String fx:value="btn-membership" />
@@ -47,25 +47,25 @@
                      <Insets left="28.0" />
                  </opaqueInsets>
              </Button>
-             <Button fx:id="btnLoadEmployee" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" stylesheets="@application.css" text="Employees" textAlignment="CENTER" GridPane.columnIndex="3">
+             <Button fx:id="btnLoadEmployee" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadAllAction" stylesheets="@application.css" text="Employees" textAlignment="CENTER" GridPane.columnIndex="3">
                  <styleClass>
                      <String fx:value="main-btn" />
                      <String fx:value="btn-employee" />
                  </styleClass>
              </Button>
-             <Button fx:id="btnLoadDepartments" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" stylesheets="@application.css" text="Departments" textAlignment="CENTER" GridPane.columnIndex="4">
+             <Button fx:id="btnLoadDepartment" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadAllAction" stylesheets="@application.css" text="Departments" textAlignment="CENTER" GridPane.columnIndex="4">
                  <styleClass>
                      <String fx:value="main-btn" />
                      <String fx:value="btn-department" />
                  </styleClass>
              </Button>
-             <Button fx:id="btnLoadInventory" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" stylesheets="@application.css" text="Inventory" textAlignment="CENTER" GridPane.columnIndex="5">
+             <Button fx:id="btnLoadInventory" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadAllAction" stylesheets="@application.css" text="Inventory" textAlignment="CENTER" GridPane.columnIndex="5">
                  <styleClass>
                      <String fx:value="main-btn" />
                      <String fx:value="btn-inventory" />
                  </styleClass>
              </Button>
-             <Button fx:id="btnLoadAccounting" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" stylesheets="@application.css" text="Accounting" textAlignment="CENTER" GridPane.columnIndex="6">
+             <Button fx:id="btnLoadAccounting" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#loadAllAction" stylesheets="@application.css" text="Accounting" textAlignment="CENTER" GridPane.columnIndex="6">
                  <styleClass>
                      <String fx:value="main-btn" />
                      <String fx:value="btn-accounting" />
