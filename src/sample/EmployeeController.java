@@ -190,17 +190,17 @@ public class EmployeeController implements Initializable{
     }
 
     private void loadTable(Boolean filter){
-        colDeptID.setCellValueFactory(new PropertyValueFactory<>("departmentID"));
-        colFName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
-        colLName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
-        colIdentityNo.setCellValueFactory(new PropertyValueFactory<>("identityNo"));
-        colMaritalStatus.setCellValueFactory(new PropertyValueFactory<>("maritalStatus"));
+        colDeptID.setCellValueFactory(new PropertyValueFactory<>("deptID"));
+        colFName.setCellValueFactory(new PropertyValueFactory<>("fname"));
+        colLName.setCellValueFactory(new PropertyValueFactory<>("lname"));
+        colIdentityNo.setCellValueFactory(new PropertyValueFactory<>("idNo"));
+        colMaritalStatus.setCellValueFactory(new PropertyValueFactory<>("maritalStat"));
         colGender.setCellValueFactory(new PropertyValueFactory<>("gender"));
         colBirthDate.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
         colStartDate.setCellValueFactory(new PropertyValueFactory<>("startDate"));
         colSalary.setCellValueFactory(new PropertyValueFactory<>("salary"));
 //        colAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
-//        colPhoneNumber.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
+//        colPhoneNumber.setCellValueFactory(new PropertyValueFactory<>("phoneNum"));
 //        colEMail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
 
