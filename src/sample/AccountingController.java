@@ -13,55 +13,68 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
 
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ResourceBundle;
 
-public class AccountingController implements Initializable {
-    private  Integer deptNo;
+
+public class AccountingController implements Initializable{
+
+    private  String balanceID;
 
     @FXML
-    public Button btnSave= new Button();
+    public Button btnSave = new Button();
 
     @FXML
-    public Button btnClear= new Button();
+    public Button btnClear = new Button();
 
     @FXML
-    public Button btnCancel= new Button();
+    public Button btnCancel = new Button();
 
     @FXML
-    public Button btnSearch= new Button();
-
-
-    // Form Elements Start
-    @FXML
-    public TextField txtDeptID=new TextField();
+    public Button btnSearch = new Button();
 
     @FXML
-    public TextField txtDeptName=new TextField();
+    public TextField txtBalanceID = new TextField();
 
     @FXML
-    public TextField txtMgrID=new TextField();
+    public TextField txtbalanceType = new TextField();
 
-    //Form Elements End
+    @FXML
+    public TextField txtDescription = new TextField();
+
+    @FXML
+    public TextField txtBalanceDate = new TextField();
+
+    @FXML
+    public TextField txtAmount = new TextField();
+
+    @FXML
+    public TextField txtDeptID = new TextField();
 
     // Tableview Start
     @FXML
-    private TableView<Department> tblDept;
+    private TableView<Accounting> tblAccounting;
 
     @FXML
-    public TableColumn<Department,Integer> colDeptID;
+    public TableColumn<Accounting,Integer> colBalanceID;
     @FXML
-    public TableColumn<Department,String> colDeptName;
+    public TableColumn<Accounting,String> colBalanceType;
     @FXML
-    public TableColumn<Department,Integer> colMgrID;
+    public TableColumn<Accounting,String> colDescription;
+    @FXML
+    public TableColumn<Accounting, Date> colBalanceDate;
+    @FXML
+    public TableColumn<Accounting,Double> colAmount;
+    @FXML
+    public TableColumn<Accounting,Integer> colDeptID;
 
     @FXML
-    public TableColumn<Department,Boolean> colUpdate;
+    public TableColumn<Accounting,Boolean> colUpdate;
     @FXML
-    public TableColumn<Department,Boolean> colDelete;
-
+    public TableColumn<Accounting,Boolean> colDelete;
     // TableView End
 
 
@@ -71,8 +84,8 @@ public class AccountingController implements Initializable {
         loadTable(false);
     }
 
-    public void saveDeptForm(ActionEvent event)  {
-        if(deptNo !=null)
+    public void saveNeedyForm(ActionEvent event)  {
+        if(balanceID !=null)
             updateRecord();
         else
             insertRecord();
@@ -92,66 +105,69 @@ public class AccountingController implements Initializable {
 
     public void cancelUpdate(ActionEvent event)  {
         clearForm();
-        deptNo =null;
+        balanceID =null;
         btnCancel.setVisible(false);
     }
 
     private void clearForm(){
+        txtBalanceID.setText("");
+        txtbalanceType.setText("");
+        txtDescription.setText("");
+        txtBalanceDate.setText("");
+        txtAmount.setText("");
         txtDeptID.setText("");
-        txtDeptName.setText("");
-        txtMgrID.setText("");
-
     }
 
-    private void loadForm(Department department){
-        txtDeptID.setText(department.getDepartmentID().toString());
-        txtDeptName.setText(department.getDepartmentName());
-        txtMgrID.setText(department.getManagerID().toString());
+    private void loadForm(Accounting accounting){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        txtBalanceID.setText(accounting.getBalanceID().toString());
+        txtbalanceType.setText(accounting.getBalanceType());
+        txtDescription.setText(accounting.getDescription());
+        txtBalanceDate.setText(dateFormat.format(accounting.getBalanceDate()));
+        txtAmount.setText(accounting.getAmount().toString());
+        txtDeptID.setText(accounting.getDepartmentID().toString());
     }
 
     private void loadTable(Boolean filter){
+        colBalanceID.setCellValueFactory(new PropertyValueFactory<>("balanceID"));
+        colBalanceType.setCellValueFactory(new PropertyValueFactory<>("balanceType"));
+        colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+        colBalanceDate.setCellValueFactory(new PropertyValueFactory<>("balanceDate"));
+        colAmount.setCellValueFactory(new PropertyValueFactory<>("amount"));
         colDeptID.setCellValueFactory(new PropertyValueFactory<>("departmentID"));
-        colDeptName.setCellValueFactory(new PropertyValueFactory<>("departmentName"));
-        colMgrID.setCellValueFactory(new PropertyValueFactory<>("managerID"));
-        /*
-        *
-        colAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
-        colPhoneNumber.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
-        colEMail.setCellValueFactory(new PropertyValueFactory<>("mail"));
-        */
 
         colUpdate.setSortable(false);
         colUpdate.setCellValueFactory(
-                new Callback<TableColumn.CellDataFeatures<Department, Boolean>, ObservableValue<Boolean>>() {
-                    @Override public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Department, Boolean> features) {
+                new Callback<TableColumn.CellDataFeatures<Accounting, Boolean>, ObservableValue<Boolean>>() {
+                    @Override public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Accounting, Boolean> features) {
                         return new SimpleBooleanProperty(features.getValue() != null);
                     }
                 }
         );
-        colUpdate.setCellFactory( new Callback<TableColumn<Department, Boolean>, TableCell<Department, Boolean>>() {
+        colUpdate.setCellFactory( new Callback<TableColumn<Accounting, Boolean>, TableCell<Accounting, Boolean>>() {
             @Override
-            public TableCell<Department, Boolean> call(TableColumn<Department, Boolean> p) {
-                return new DepartmentController.EditButtonCell();
+            public TableCell<Accounting, Boolean> call(TableColumn<Accounting, Boolean> p) {
+                return new EditButtonCell();
             }
         });
 
         colDelete.setCellValueFactory(
-                new Callback<TableColumn.CellDataFeatures<Department, Boolean>, ObservableValue<Boolean>>() {
-                    @Override public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Department, Boolean> features) {
+                new Callback<TableColumn.CellDataFeatures<Accounting, Boolean>, ObservableValue<Boolean>>() {
+                    @Override public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Accounting, Boolean> features) {
                         return new SimpleBooleanProperty(features.getValue() != null);
                     }
                 }
         );
-        colDelete.setCellFactory( new Callback<TableColumn<Department, Boolean>, TableCell<Department, Boolean>>() {
+        colDelete.setCellFactory( new Callback<TableColumn<Accounting, Boolean>, TableCell<Accounting, Boolean>>() {
             @Override
-            public TableCell<Department, Boolean> call(TableColumn<Department, Boolean> p) {
-                return new DepartmentController.DeleteButtonCell();
+            public TableCell<Accounting, Boolean> call(TableColumn<Accounting, Boolean> p) {
+                return new DeleteButtonCell();
             }
         });
 
-        tblDept.setItems(getDeptList(filter));
+        tblAccounting.setItems(getAccountingList(filter));
 
-        tblDept.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection)->{
+        tblAccounting.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection)->{
             if (newSelection != null) {
 
             }
@@ -160,51 +176,65 @@ public class AccountingController implements Initializable {
     }
 
     private void insertRecord(){
-        String query = "INSERT INTO needy VALUES('"+
-                txtDeptID.getText()+"','"+
-                txtDeptName.getText()+"','"+
-                txtMgrID.getText()+"','"+
+        String query = "INSERT INTO Balance VALUES('"+
+                txtBalanceID.getText().toString()+"','"+
+                txtbalanceType.getText()+"','"+
+                txtDescription.getText()+"','"+
+                txtBalanceDate.getText()+"',"+
+                txtAmount.getText().toString()+",'"+
+                txtDeptID.getText().toString()+"'"+
                 ")";
         executeQuery(query);
     }
 
     private void updateRecord(){
-        String query = "UPDATE needy SET "+
-                "dept_id='"+ txtDeptID.getText()+"', "+
-                "dept_name='"+txtDeptName.getText()+"', "+
-                "dept_mgr_id='"+txtMgrID.getText()+"', "+
-                " WHERE id_no='" + deptNo + "'";
+        String query = "UPDATE Balance SET "+
+                "balance_id='"+ txtBalanceID.getText().toString()+"', "+
+                "balance_type='"+ txtbalanceType.getText()+"', "+
+                "description='"+ txtDescription.getText()+"', "+
+                "balance_date='"+ txtBalanceDate.getText()+"', "+
+                "amount="+ txtAmount.getText()+", "+
+                "dept_id'"+ txtDeptID.getText()+"' "+
+                " WHERE id_no='" + balanceID + "'";
         executeQuery(query);
         clearForm();
         btnCancel.setVisible(false);
-        deptNo =null;
+        balanceID =null;
     }
 
-    private void deleteRecord(Integer deptID){
-        String query = "DELETE FROM Department WHERE dept_id='"+deptID+"'";
+    private void deleteRecord(String balanceID){
+        String query = "DELETE FROM Balance WHERE id_no='"+balanceID+"'";
         executeQuery(query);
     }
 
-    private ObservableList<Department> getDeptList(Boolean filter){
-        ObservableList<Department> departments = FXCollections.observableArrayList();
+    private ObservableList<Accounting> getAccountingList(Boolean filter){
+        ObservableList<Accounting> accountings = FXCollections.observableArrayList();
         Connection conn= new DatabaseConnection().getConnection();
 
-        String query= "SELECT * FROM Department ";
+        String query= "SELECT * FROM balance ";
 
         if(filter){
             String condition="";
 
-            if(txtDeptID.getText().length()>0){
+            if(txtBalanceID.getText().length()>0){
                 condition+=condition!=""?" AND ":"";
-                condition+=" fname LIKE '"+txtDeptID.getText()+"%'";
+                condition+=" id_no='"+ txtBalanceID.getText()+"'";
+            }
+            if(txtbalanceType.getText().length()>0){
+                condition+=condition!=""?" AND ":"";
+                condition+=" fname LIKE '"+ txtbalanceType.getText()+"%'";
+            }
+            if(txtDescription.getText().length()>0){
+                condition+=condition!=""?" AND ":"";
+                condition+=" lname LIKE '"+ txtDescription.getText()+"%'";
+            }
+            if(txtAmount.getText().length()>0){
+                condition+=condition!=""?" AND ":"";
+                condition+=" income="+ txtAmount.getText();
             }
             if(txtDeptID.getText().length()>0){
                 condition+=condition!=""?" AND ":"";
-                condition+=" lname LIKE '"+txtDeptName.getText()+"%'";
-            }
-            if(txtMgrID.getText().length()>0){
-                condition+=condition!=""?" AND ":"";
-                condition+=" id_no='"+txtMgrID.getText()+"'";
+                condition+=" email='"+ txtDeptID.getText()+"'";
             }
             if(condition!="")
                 query += "WHERE "+condition;
@@ -216,20 +246,24 @@ public class AccountingController implements Initializable {
         try {
             st= conn.createStatement();
             rs=st.executeQuery(query);
-            Department department;
+            Accounting accounting;
             while (rs.next()){
 
-                department = new Department(
-                        rs.getInt("dept_id"),
-                        rs.getString("dept_name"),
-                        rs.getString("dept_mgr_id"));
-                departments.add(department);
+                accounting = new Accounting(
+                        rs.getInt("balance_id"),
+                        rs.getString("balance_type"),
+                        rs.getString("description"),
+                        rs.getDate("balance_date"),
+                        rs.getDouble("amount"),
+                        rs.getInt("dept_id"));
+                accountings.add(accounting);
             }
-            return  departments;
+            return  accountings;
         }
-        catch (Exception ex){
+        catch (Exception ex)
+        {
             ex.printStackTrace();
-            return  null;
+            return null;
         }
     }
 
@@ -238,12 +272,14 @@ public class AccountingController implements Initializable {
             Connection conn= new DatabaseConnection().getConnection();
             Statement st=conn.createStatement();
             st.executeUpdate(query);
-        }catch (Exception ex){
-            System.out.println("Error:" +ex.getMessage());
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
     }
 
-    private class EditButtonCell extends TableCell<Department, Boolean> {
+    private class EditButtonCell extends TableCell<Accounting, Boolean> {
         final Button cellButton = new Button("Edit");
 
         EditButtonCell(){
@@ -252,11 +288,11 @@ public class AccountingController implements Initializable {
 
                 @Override
                 public void handle(ActionEvent t) {
-                    Department department = (Department) DepartmentController.EditButtonCell.this.getTableView().getItems().get(DepartmentController.EditButtonCell.this.getIndex());
-                    deptNo =department.getDepartmentID();
+                    Accounting accounting = (Accounting) EditButtonCell.this.getTableView().getItems().get(EditButtonCell.this.getIndex());
+                    balanceID =accounting.getBalanceID().toString();
                     btnCancel.setVisible(true);
                     btnClear.setVisible(false);
-                    loadForm(department);
+                    loadForm(accounting);
                 }
             });
         }
@@ -271,20 +307,20 @@ public class AccountingController implements Initializable {
         }
     }
 
-    private class DeleteButtonCell extends TableCell<Department, Boolean> {
+    private class DeleteButtonCell extends TableCell<Accounting, Boolean> {
         final Button cellButton = new Button("Delete");
 
         DeleteButtonCell(){
             cellButton.setOnAction(new EventHandler<ActionEvent>(){
                 @Override
                 public void handle(ActionEvent t) {
-                    Department department = (Department) DepartmentController.DeleteButtonCell.this.getTableView().getItems().get(DepartmentController.DeleteButtonCell.this.getIndex());
+                    Accounting accounting = (Accounting) DeleteButtonCell.this.getTableView().getItems().get(DeleteButtonCell.this.getIndex());
 
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete :" + department.getDepartmentID()+" "+department.getDepartmentName() + " ?", ButtonType.YES,   ButtonType.CANCEL);
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Delete :" + accounting.getBalanceID()+" "+accounting.getBalanceType() + " ?", ButtonType.YES,   ButtonType.CANCEL);
                     alert.showAndWait();
 
                     if (alert.getResult() == ButtonType.YES) {
-                        deleteRecord(department.getDepartmentID());
+                        deleteRecord(accounting.getBalanceID().toString());
                         loadTable(false);
                         clearForm();
                     }
@@ -301,4 +337,5 @@ public class AccountingController implements Initializable {
             }
         }
     }
+
 }
