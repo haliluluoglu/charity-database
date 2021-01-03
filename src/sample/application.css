@@ -10,4 +10,16 @@
 .btn-department{ -fx-background-image:url('/images/department.png'); }
 .btn-accounting{ -fx-background-image:url('/images/accounting.png'); }
 .btn-inventory{ -fx-background-image:url('/images/inventory.png'); }
+.lbl-error{
+    -fx-background-color: #ff4040;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #bb4040;
+    -fx-border-style: solid;
+}
+.lbl-default{
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #444444;
+    -fx-border-color: #444444;
+    -fx-border-style: solid;
+}
 

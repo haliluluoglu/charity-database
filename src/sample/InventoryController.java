@@ -39,7 +39,7 @@ public class InventoryController implements Initializable{
     public TextField txtInventoryID=new TextField();
 
     @FXML
-    public TextField txtInventoryType=new TextField();
+    public ChoiceBox cbInventoryType=new ChoiceBox();
 
     @FXML
     public TextField txtDescription=new TextField();
@@ -101,7 +101,7 @@ public class InventoryController implements Initializable{
 
     private void clearForm(){
         txtInventoryID.setText("");
-        txtInventoryType.setText("");
+        cbInventoryType.setValue(null);
         txtDescription.setText("");
         txtAmount.setText("");
 
@@ -109,7 +109,7 @@ public class InventoryController implements Initializable{
 
     private void loadForm(Inventory inventory){
         txtInventoryID.setText(inventory.getInventoryID().toString());
-        txtInventoryType.setText(inventory.getInventoryType());
+        cbInventoryType.setValue(inventory.getInventoryType());
         txtDescription.setText(inventory.getDescription());
         txtAmount.setText(inventory.getAmount().toString());
     }
@@ -160,22 +160,20 @@ public class InventoryController implements Initializable{
     }
 
     private void insertRecord(){
-        String query = "INSERT INTO needy VALUES('"+
-                txtInventoryID.getText()+"','"+
-                txtInventoryType.getText()+"','"+
-                txtDescription.getText()+"','"+
-                txtAmount.getText()+"','"+
-                ")";
+        String query = "INSERT INTO needy (inventory_type, description, amount ) VALUES('"+
+                cbInventoryType.getValue()+"','"+
+                txtDescription.getText()+"',"+
+                txtAmount.getText()+")";
         executeQuery(query);
     }
 
     private void updateRecord(){
-        String query = "UPDATE needy SET "+
-                "inventory_id='"+ txtInventoryID.getText()+"', "+
-                "inventory_type='"+txtInventoryType.getText()+"', "+
+        String query = "UPDATE inventory SET "+
+                "inventory_type='"+cbInventoryType.getValue().toString().toLowerCase()+"', "+
                 "description='"+txtDescription.getText()+"', "+
-                "amount='"+txtAmount.getText()+"', "+
-                " WHERE id_no='" + inventoryID + "'";
+                "amount="+txtAmount.getText()+" "+
+                "WHERE inventory_id=" + inventoryID;
+
         executeQuery(query);
         clearForm();
         btnCancel.setVisible(false);
@@ -183,7 +181,7 @@ public class InventoryController implements Initializable{
     }
 
     private void deleteRecord(String identityNo){
-        String query = "DELETE FROM Inventory WHERE id_no='"+identityNo+"'";
+        String query = "DELETE FROM Inventory WHERE inventory_id='"+identityNo+"'";
         executeQuery(query);
     }
 
@@ -196,13 +194,9 @@ public class InventoryController implements Initializable{
         if(filter){
             String condition="";
 
-            if(txtInventoryID.getText().length()>0){
+            if(cbInventoryType.getValue()!=null){
                 condition+=condition!=""?" AND ":"";
-                condition+=" inventory_id LIKE '"+txtInventoryID.getText()+"%'";
-            }
-            if(txtInventoryType.getText().length()>0){
-                condition+=condition!=""?" AND ":"";
-                condition+=" inventory_type LIKE '"+txtInventoryType.getText()+"%'";
+                condition+=" inventory_type='"+cbInventoryType.getValue().toString().toLowerCase()+"'";
             }
             if(txtDescription.getText().length()>0){
                 condition+=condition!=""?" AND ":"";
@@ -216,18 +210,15 @@ public class InventoryController implements Initializable{
                 query += "WHERE "+condition;
         }
 
-        Statement st;
-        ResultSet rs;
-
         try {
-            st= conn.createStatement();
-            rs=st.executeQuery(query);
+            Statement st= conn.createStatement();
+            ResultSet rs=st.executeQuery(query);
             Inventory inventory;
             while (rs.next()){
 
                 inventory = new Inventory(
                         rs.getInt("inventory_id"),
-                        rs.getString("inventory_type"),
+                        rs.getString("inventory_type").toLowerCase(),
                         rs.getString("description"),
                         rs.getInt("amount"));
                 inventories.add(inventory);

@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -11,10 +12,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+import java.net.URL;
 import java.util.Arrays;
+import java.util.ResourceBundle;
 
 
-public class MainController {
+
+public class MainController implements Initializable {
 
     @FXML
     public  Button btnLogin=new  Button();
@@ -32,6 +36,17 @@ public class MainController {
 
     public void setPrimaryStage(Stage primaryStage){
         this.primaryStage = primaryStage;
+    }
+
+    @Override
+    public  void  initialize(URL location, ResourceBundle resources){
+
+        try{
+
+        }
+        catch (Exception ex){
+
+        }
     }
 
     public void checkLogin(ActionEvent event)throws Exception {

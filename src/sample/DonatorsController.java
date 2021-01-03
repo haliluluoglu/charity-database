@@ -165,12 +165,6 @@ public class DonatorsController implements Initializable{
         colIdentityNo.setCellValueFactory(new PropertyValueFactory<>("identityNo"));
         colGender.setCellValueFactory(new PropertyValueFactory<>("gender"));
         colProfession.setCellValueFactory(new PropertyValueFactory<>("profession"));
-        /*
-        *
-        colAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
-        colPhoneNumber.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
-        colEMail.setCellValueFactory(new PropertyValueFactory<>("mail"));
-        */
 
         colUpdate.setSortable(false);
         colUpdate.setCellValueFactory(
@@ -220,10 +214,11 @@ public class DonatorsController implements Initializable{
                 cbGender.getValue().toString().charAt(0)+"','"+
                 txtAddress.getText()+"','"+
                 txtPhone.getText()+"','"+
-                txtMail.getText()+"'"+
-                txtProfession.getText()+"'"+
-                ")";
+                txtMail.getText()+"','"+
+                txtProfession.getText()+"')";
+
         executeQuery(query);
+        clearForm();
     }
 
     private void executeQuery(String query) {
@@ -236,8 +231,6 @@ public class DonatorsController implements Initializable{
             System.out.println("Error:" +ex.getMessage());
         }
     }
-
-
 
     private void updateRecord(){
         String query = "UPDATE Donators SET "+
@@ -289,56 +282,55 @@ public class DonatorsController implements Initializable{
             if (cbGender.getValue() != null) {
                 condition += condition != "" ? " AND " : "";
                 condition += " gender='" + cbGender.getValue().toString().charAt(0) + "'";
-                if (txtAddress.getText().length() > 0) {
-                    condition += condition != "" ? " AND " : "";
-                    condition += " address LIKE '%" + txtAddress.getText() + "%'";
-                }
-                if (txtPhone.getText().length() > 0) {
-                    condition += condition != "" ? " AND " : "";
-                    condition += " phone_num='" + txtPhone.getText() + "'";
-                }
-                if (txtMail.getText().length() > 0) {
-                    condition += condition != "" ? " AND " : "";
-                    condition += " email='" + txtMail.getText() + "'";
-                }
-                if (txtProfession.getText().length() > 0) {
-                    condition += condition != "" ? " AND " : "";
-                    condition += " profession='" + txtProfession.getText() + "'";
-                }
-                if (condition != "")
-                    query += "WHERE " + condition;
             }
-
-            Statement st;
-            ResultSet rs;
-
-            try {
-                st = conn.createStatement();
-                rs = st.executeQuery(query);
-                Donators donator;
-                while (rs.next()) {
-
-                    donator = new Donators(
-                            rs.getString("comp_name"),
-                            rs.getString("fname"),
-                            rs.getString("lname"),
-                            rs.getString("id_no"),
-                            rs.getString("gender"),
-                            rs.getString("address"),
-                            rs.getString("phone_num"),
-                            rs.getString("email"),
-                            rs.getString("profession"));
-                    donators.add(donator);
-                }
-                return donators;
+            if (txtAddress.getText().length() > 0) {
+                condition += condition != "" ? " AND " : "";
+                condition += " address LIKE '%" + txtAddress.getText() + "%'";
             }
-            catch (Exception ex) {
-                ex.printStackTrace();
-                return null;
+            if (txtPhone.getText().length() > 0) {
+                condition += condition != "" ? " AND " : "";
+                condition += " phone_num='" + txtPhone.getText() + "'";
             }
+            if (txtMail.getText().length() > 0) {
+                condition += condition != "" ? " AND " : "";
+                condition += " email='" + txtMail.getText() + "'";
+            }
+            if (txtProfession.getText().length() > 0) {
+                condition += condition != "" ? " AND " : "";
+                condition += " profession='" + txtProfession.getText() + "'";
+            }
+            if (condition != "")
+                query += "WHERE " + condition;
         }
-        return null;
+
+
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            Donators donator;
+            while (rs.next()) {
+
+                donator = new Donators(
+                        rs.getString("comp_name"),
+                        rs.getString("fname"),
+                        rs.getString("lname"),
+                        rs.getString("id_no"),
+                        rs.getString("gender"),
+                        rs.getString("address"),
+                        rs.getString("phone_num"),
+                        rs.getString("email"),
+                        rs.getString("profession"));
+                donators.add(donator);
+            }
+            return donators;
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+
     }
+
     private class EditButtonCell extends TableCell<Donators, Boolean> {
         final Button cellButton = new Button("Edit");
 

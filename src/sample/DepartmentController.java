@@ -11,9 +11,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 
+import javax.swing.plaf.nimbus.State;
 import java.net.URL;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 
@@ -33,6 +37,12 @@ public class DepartmentController implements Initializable{
     @FXML
     public Button btnSearch= new Button();
 
+    @FXML
+    public Button btnShowEmployees= new Button();
+
+    @FXML
+    public ComboBox<Department> cbDepartment= new ComboBox<Department>();
+
 
     // Form Elements Start
     @FXML
@@ -42,7 +52,7 @@ public class DepartmentController implements Initializable{
     public TextField txtDeptName=new TextField();
 
     @FXML
-    public TextField txtMgrID=new TextField();
+    public ComboBox<Employee> cbManager=new ComboBox<Employee>();
 
     //Form Elements End
 
@@ -64,11 +74,18 @@ public class DepartmentController implements Initializable{
 
     // TableView End
 
+    @FXML
+    private TableView<EmpByDepartmetment> tblEmployee;
+
+    @FXML
+    public TableColumn<EmpByDepartmetment,String> colEmployee;
+
 
     @Override
     public  void  initialize(URL location, ResourceBundle resources){
-
         loadTable(false);
+        loadManager();
+        loadDepartment();
     }
 
     public void saveDeptForm(ActionEvent event)  {
@@ -96,29 +113,151 @@ public class DepartmentController implements Initializable{
         btnCancel.setVisible(false);
     }
 
+    public void loadEmpList(ActionEvent event)  {
+        colEmployee.setCellValueFactory(new PropertyValueFactory<>("line"));
+
+        tblEmployee.setItems(getEmpList());
+    }
+
     private void clearForm(){
         txtDeptID.setText("");
         txtDeptName.setText("");
-        txtMgrID.setText("");
-
+        cbManager.setValue(null);
     }
 
     private void loadForm(Department department){
         txtDeptID.setText(department.getDepartmentID().toString());
         txtDeptName.setText(department.getDepartmentName());
-        txtMgrID.setText(department.getManagerID().toString());
+        cbManager.setValue(getManager(department.getManagerID()));
+
+    }
+
+    private  void loadManager() {
+
+        ObservableList<Employee> employees = FXCollections.observableArrayList();
+        Connection conn = new DatabaseConnection().getConnection();
+
+        String query = "SELECT * FROM Employee";
+
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
+
+            while (rs.next()) {
+                Employee employee = new Employee(
+                        rs.getInt("dept_id"),
+                        rs.getString("fname"),
+                        rs.getString("lname"),
+                        rs.getString("id_no"),
+                        rs.getString("marital_stat"),
+                        rs.getString("gender"),
+                        rs.getDate("birth_date"),
+                        rs.getDate("start_date"),
+                        rs.getDouble("salary"),
+                        rs.getString("address"),
+                        rs.getString("phone_num"),
+                        rs.getString("email"),
+                        rs.getString("title"));
+                employees.add(employee);
+            }
+            cbManager.setItems(employees);
+
+            cbManager.setConverter(new StringConverter<Employee>() {
+
+                @Override
+                public String toString(Employee employee) {
+                    return employee!=null? employee.getFname()+" "+employee.getLname()+"-"+employee.getIdNo().toString() :null;
+                }
+
+                @Override
+                public Employee fromString(String string) {
+                    System.out.println(string);
+                    return cbManager.getItems().stream().filter(ap ->
+                            (ap.getFname()+" "+ ap.getLname()+"-"+ap.getIdNo().toString()).equals(string)).findFirst().orElse(null);
+                }
+            });
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    private Employee getManager(String managerId){
+        Connection conn= new DatabaseConnection().getConnection();
+        Employee employee=null;
+        String query= "SELECT * FROM Employee WHERE id_no='"+managerId+"'";
+        try {
+            Statement st= conn.createStatement();
+            ResultSet rs=st.executeQuery(query);
+            boolean  deptAssigned=false;
+            while (rs.next() && deptAssigned==false){
+
+                employee = new Employee(
+                        rs.getInt("dept_id"),
+                        rs.getString("fname"),
+                        rs.getString("lname"),
+                        rs.getString("id_no"),
+                        rs.getString("marital_stat"),
+                        rs.getString("gender"),
+                        rs.getDate("birth_date"),
+                        rs.getDate("start_date"),
+                        rs.getDouble("salary"),
+                        rs.getString("address"),
+                        rs.getString("phone_num"),
+                        rs.getString("email"),
+                        rs.getString("title"));
+                deptAssigned=true;
+            }
+            return employee;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    private  void loadDepartment() {
+        ObservableList<Department> departments = FXCollections.observableArrayList();
+        Connection conn = new DatabaseConnection().getConnection();
+
+        String query = "SELECT * FROM department";
+
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
+
+            while (rs.next()) {
+                Department department = new Department(
+                        rs.getInt("dept_id"),
+                        rs.getString("dept_name"),
+                        rs.getString("dept_mgr_id"));
+                departments.add(department);
+            }
+            cbDepartment.setItems(departments);
+
+            cbDepartment.setConverter(new StringConverter<Department>() {
+
+                @Override
+                public String toString(Department department) {
+                    return department!=null? department.getDepartmentName():null;
+                }
+
+                @Override
+                public Department fromString(String string) {
+                    return cbDepartment.getItems().stream().filter(ap ->
+                            ap.getDepartmentName().equals(string)).findFirst().orElse(null);
+                }
+            });
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void loadTable(Boolean filter){
         colDeptID.setCellValueFactory(new PropertyValueFactory<>("departmentID"));
         colDeptName.setCellValueFactory(new PropertyValueFactory<>("departmentName"));
         colMgrID.setCellValueFactory(new PropertyValueFactory<>("managerID"));
-        /*
-        *
-        colAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
-        colPhoneNumber.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
-        colEMail.setCellValueFactory(new PropertyValueFactory<>("mail"));
-        */
 
         colUpdate.setSortable(false);
         colUpdate.setCellValueFactory(
@@ -160,20 +299,19 @@ public class DepartmentController implements Initializable{
     }
 
     private void insertRecord(){
-        String query = "INSERT INTO needy VALUES('"+
-                txtDeptID.getText()+"','"+
+        String query = "INSERT INTO  Department (dept_name, dept_mgr_id) VALUES('"+
                 txtDeptName.getText()+"','"+
-                txtMgrID.getText()+"','"+
-                ")";
+                cbManager.getValue().getIdNo()+
+                "')";
         executeQuery(query);
+
     }
 
     private void updateRecord(){
-        String query = "UPDATE needy SET "+
-                "dept_id='"+ txtDeptID.getText()+"', "+
+        String query = "UPDATE Department SET "+
                 "dept_name='"+txtDeptName.getText()+"', "+
-                "dept_mgr_id='"+txtMgrID.getText()+"', "+
-                " WHERE id_no='" + deptNo + "'";
+                "dept_mgr_id='"+cbManager.getValue().getIdNo()+"', "+
+                " WHERE dept_id=" + deptNo;
         executeQuery(query);
         clearForm();
         btnCancel.setVisible(false);
@@ -196,15 +334,15 @@ public class DepartmentController implements Initializable{
 
             if(txtDeptID.getText().length()>0){
                 condition+=condition!=""?" AND ":"";
-                condition+=" fname LIKE '"+txtDeptID.getText()+"%'";
+                condition+=" dept_id LIKE '"+txtDeptID.getText()+"%'";
             }
             if(txtDeptID.getText().length()>0){
                 condition+=condition!=""?" AND ":"";
-                condition+=" lname LIKE '"+txtDeptName.getText()+"%'";
+                condition+=" dept_name LIKE '"+txtDeptName.getText()+"%'";
             }
-            if(txtMgrID.getText().length()>0){
+            if(cbManager.getValue()!=null){
                 condition+=condition!=""?" AND ":"";
-                condition+=" id_no='"+txtMgrID.getText()+"'";
+                condition+=" dept_mgr_id='"+cbManager.getValue().getIdNo()+"'";
             }
             if(condition!="")
                 query += "WHERE "+condition;
@@ -302,4 +440,28 @@ public class DepartmentController implements Initializable{
         }
     }
 
+
+    private ObservableList<EmpByDepartmetment> getEmpList(){
+        ObservableList<EmpByDepartmetment> lines = FXCollections.observableArrayList();
+        Connection conn= new DatabaseConnection().getConnection();
+
+        String query= "SELECT cursorc("+cbDepartment.getValue().getDepartmentID()+")";
+
+        try {
+            Statement st= conn.createStatement();
+            ResultSet rs=st.executeQuery(query);
+            SQLWarning warning = st.getWarnings();
+            while (warning!=null){
+                lines.add(new EmpByDepartmetment(warning.getMessage()));
+                warning=warning.getNextWarning();
+            }
+            return  lines;
+        }
+        catch (SQLException ex){
+            System.out.println(ex.getMessage());
+            //ex.printStackTrace();
+
+            return  null;
+        }
+    }
 }

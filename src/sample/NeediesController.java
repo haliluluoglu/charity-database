@@ -131,9 +131,9 @@ public class NeediesController implements Initializable{
     }
 
     public void cancelUpdate(ActionEvent event)  {
-       clearForm();
-       identityNo=null;
-       btnCancel.setVisible(false);
+        clearForm();
+        identityNo=null;
+        btnCancel.setVisible(false);
     }
 
     private void clearForm(){
@@ -198,11 +198,11 @@ public class NeediesController implements Initializable{
 
         colUpdate.setSortable(false);
         colUpdate.setCellValueFactory(
-            new Callback<TableColumn.CellDataFeatures<Needy, Boolean>, ObservableValue<Boolean>>() {
-                @Override public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Needy, Boolean> features) {
-                    return new SimpleBooleanProperty(features.getValue() != null);
+                new Callback<TableColumn.CellDataFeatures<Needy, Boolean>, ObservableValue<Boolean>>() {
+                    @Override public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Needy, Boolean> features) {
+                        return new SimpleBooleanProperty(features.getValue() != null);
+                    }
                 }
-            }
         );
         colUpdate.setCellFactory( new Callback<TableColumn<Needy, Boolean>, TableCell<Needy, Boolean>>() {
             @Override
@@ -248,7 +248,7 @@ public class NeediesController implements Initializable{
                 txtAddress.getText()+"','"+
                 txtPhone.getText()+"','"+
                 txtMail.getText()+"'"+
-        ")";
+                ")";
         executeQuery(query);
     }
 
@@ -282,7 +282,6 @@ public class NeediesController implements Initializable{
         Connection conn= new DatabaseConnection().getConnection();
 
         String query= "SELECT * FROM needy ";
-
         if(filter){
             String condition="";
 
@@ -330,15 +329,11 @@ public class NeediesController implements Initializable{
                 query += "WHERE "+condition;
         }
 
-        Statement st;
-        ResultSet rs;
-
         try {
-            st= conn.createStatement();
-            rs=st.executeQuery(query);
+            Statement st= conn.createStatement();
+            ResultSet rs=st.executeQuery(query);
             Needy needy;
             while (rs.next()){
-
                 needy = new Needy(
                         rs.getString("fname"),
                         rs.getString("lname"),

@@ -10,13 +10,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 import java.net.URL;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.EventObject;
 import java.util.ResourceBundle;
 
 
@@ -37,22 +41,31 @@ public class AccountingController implements Initializable{
     public Button btnSearch = new Button();
 
     @FXML
+    public Button btnShowResult = new Button();
+
+    @FXML
     public TextField txtBalanceID = new TextField();
 
     @FXML
-    public TextField txtbalanceType = new TextField();
+    public ChoiceBox cbBalanceType = new ChoiceBox();
 
     @FXML
     public TextField txtDescription = new TextField();
 
     @FXML
-    public TextField txtBalanceDate = new TextField();
+    public DatePicker txtBalanceDate = new DatePicker();
 
     @FXML
     public TextField txtAmount = new TextField();
 
     @FXML
-    public TextField txtDeptID = new TextField();
+    public ComboBox<Department> cbDepartment = new ComboBox<Department>();
+
+    @FXML
+    public TextField txtByYear= new TextField();
+
+    @FXML
+    public ChoiceBox cbByType = new ChoiceBox();
 
     // Tableview Start
     @FXML
@@ -77,11 +90,18 @@ public class AccountingController implements Initializable{
     public TableColumn<Accounting,Boolean> colDelete;
     // TableView End
 
+    @FXML
+    private TableView<AccountingByYear> tblCalculations;
+    @FXML
+    public TableColumn<AccountingByYear,String> colByMonth;
+    @FXML
+    public TableColumn<AccountingByYear,String> colByTotal;
 
     @Override
     public  void  initialize(URL location, ResourceBundle resources){
 
         loadTable(false);
+        loadDepartment();
     }
 
     public void saveNeedyForm(ActionEvent event)  {
@@ -103,6 +123,18 @@ public class AccountingController implements Initializable{
         loadTable(false);
     }
 
+    public void loadCalculations(ActionEvent event)  {
+        if(cbByType.getValue()!=null && txtByYear.getText().length()>0){
+            colByMonth.setCellValueFactory(new PropertyValueFactory<>("month"));
+            colByTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
+
+            tblCalculations.setItems(getTotalByMonth());
+        }else{
+            Alert alert = new Alert(Alert.AlertType.WARNING, "You must specify type and  year!",  ButtonType.CLOSE);
+            alert.showAndWait();
+        }
+    }
+
     public void cancelUpdate(ActionEvent event)  {
         clearForm();
         balanceID =null;
@@ -111,21 +143,84 @@ public class AccountingController implements Initializable{
 
     private void clearForm(){
         txtBalanceID.setText("");
-        txtbalanceType.setText("");
+        cbBalanceType.setValue(null);
         txtDescription.setText("");
-        txtBalanceDate.setText("");
+        txtBalanceDate.setValue(null);
         txtAmount.setText("");
-        txtDeptID.setText("");
+        cbDepartment.setValue(null);
+    }
+
+    private  void loadDepartment() {
+
+        ObservableList<Department> departments = FXCollections.observableArrayList();
+        Connection conn = new DatabaseConnection().getConnection();
+
+        String query = "SELECT * FROM department";
+
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
+
+            while (rs.next()) {
+                Department department = new Department(
+                        rs.getInt("dept_id"),
+                        rs.getString("dept_name"),
+                        rs.getString("dept_mgr_id"));
+                departments.add(department);
+            }
+            cbDepartment.setItems(departments);
+
+            cbDepartment.setConverter(new StringConverter<Department>() {
+
+                @Override
+                public String toString(Department department) {
+                    return department!=null? department.getDepartmentName():null;
+                }
+
+                @Override
+                public Department fromString(String string) {
+                    return cbDepartment.getItems().stream().filter(ap ->
+                            ap.getDepartmentName().equals(string)).findFirst().orElse(null);
+                }
+            });
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    private Department getDepartment(int deptId){
+        Connection conn= new DatabaseConnection().getConnection();
+        Department department=null;
+        String query= "SELECT * FROM department WHERE dept_id="+deptId;
+        try {
+            Statement st= conn.createStatement();
+            ResultSet rs=st.executeQuery(query);
+            boolean  deptAssigned=false;
+            while (rs.next() && deptAssigned==false){
+
+                department = new Department(
+                        rs.getInt("dept_id"),
+                        rs.getString("dept_name"),
+                        rs.getString("dept_mgr_id"));
+                deptAssigned=true;
+            }
+            return  department;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
     }
 
     private void loadForm(Accounting accounting){
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         txtBalanceID.setText(accounting.getBalanceID().toString());
-        txtbalanceType.setText(accounting.getBalanceType());
+        cbBalanceType.setValue(accounting.getBalanceType());
         txtDescription.setText(accounting.getDescription());
-        txtBalanceDate.setText(dateFormat.format(accounting.getBalanceDate()));
+        txtBalanceDate.setValue(LocalDate.parse(dateFormat.format(accounting.getBalanceDate())));
         txtAmount.setText(accounting.getAmount().toString());
-        txtDeptID.setText(accounting.getDepartmentID().toString());
+        cbDepartment.setValue(getDepartment(accounting.getDepartmentID()));
     }
 
     private void loadTable(Boolean filter){
@@ -176,26 +271,26 @@ public class AccountingController implements Initializable{
     }
 
     private void insertRecord(){
-        String query = "INSERT INTO Balance VALUES('"+
-                txtBalanceID.getText().toString()+"','"+
-                txtbalanceType.getText()+"','"+
-                txtDescription.getText()+"','"+
-                txtBalanceDate.getText()+"',"+
-                txtAmount.getText().toString()+",'"+
-                txtDeptID.getText().toString()+"'"+
-                ")";
+
+        String query = "INSERT INTO balance " +
+                "(balance_type, balance_date, amount, dept_id, description) VALUES('"+
+                cbBalanceType.getValue()+"','"+
+                txtBalanceDate.getValue()+"',"+
+                txtAmount.getText()+","+
+                cbDepartment.getValue().getDepartmentID()+",'"+
+                txtDescription.getText()+"')";
         executeQuery(query);
+
     }
 
     private void updateRecord(){
         String query = "UPDATE Balance SET "+
-                "balance_id='"+ txtBalanceID.getText().toString()+"', "+
-                "balance_type='"+ txtbalanceType.getText()+"', "+
+                "balance_type='"+ cbBalanceType.getValue()+"', "+
                 "description='"+ txtDescription.getText()+"', "+
-                "balance_date='"+ txtBalanceDate.getText()+"', "+
+                "balance_date='"+ txtBalanceDate.getValue()+"', "+
                 "amount="+ txtAmount.getText()+", "+
-                "dept_id'"+ txtDeptID.getText()+"' "+
-                " WHERE id_no='" + balanceID + "'";
+                "dept_id="+ cbDepartment.getValue().getDepartmentID()+
+                " WHERE balance_id=" + balanceID;
         executeQuery(query);
         clearForm();
         btnCancel.setVisible(false);
@@ -203,7 +298,7 @@ public class AccountingController implements Initializable{
     }
 
     private void deleteRecord(String balanceID){
-        String query = "DELETE FROM Balance WHERE id_no='"+balanceID+"'";
+        String query = "DELETE FROM Balance WHERE balance_id="+balanceID;
         executeQuery(query);
     }
 
@@ -218,37 +313,37 @@ public class AccountingController implements Initializable{
 
             if(txtBalanceID.getText().length()>0){
                 condition+=condition!=""?" AND ":"";
-                condition+=" id_no='"+ txtBalanceID.getText()+"'";
+                condition+=" balance_id='"+ txtBalanceID.getText()+"'";
             }
-            if(txtbalanceType.getText().length()>0){
+            if(cbBalanceType.getValue()!=null){
                 condition+=condition!=""?" AND ":"";
-                condition+=" fname LIKE '"+ txtbalanceType.getText()+"%'";
+                condition+=" balance_type= '"+ cbBalanceType.getValue().toString()+"'";
+            }
+            if(txtBalanceDate.getValue()!=null){
+                condition+=condition!=""?" AND ":"";
+                condition+=" balance_date='"+ txtBalanceDate.getValue()+"'";
             }
             if(txtDescription.getText().length()>0){
                 condition+=condition!=""?" AND ":"";
-                condition+=" lname LIKE '"+ txtDescription.getText()+"%'";
+                condition+=" description LIKE '"+ txtDescription.getText()+"%'";
             }
             if(txtAmount.getText().length()>0){
                 condition+=condition!=""?" AND ":"";
                 condition+=" income="+ txtAmount.getText();
             }
-            if(txtDeptID.getText().length()>0){
+            if(cbDepartment.getValue()!=null){
                 condition+=condition!=""?" AND ":"";
-                condition+=" email='"+ txtDeptID.getText()+"'";
+                condition+=" dept_id="+ cbDepartment.getValue().getDepartmentID();
             }
             if(condition!="")
                 query += "WHERE "+condition;
         }
 
-        Statement st;
-        ResultSet rs;
-
         try {
-            st= conn.createStatement();
-            rs=st.executeQuery(query);
+            Statement st= conn.createStatement();
+            ResultSet rs=st.executeQuery(query);
             Accounting accounting;
             while (rs.next()){
-
                 accounting = new Accounting(
                         rs.getInt("balance_id"),
                         rs.getString("balance_type"),
@@ -271,7 +366,10 @@ public class AccountingController implements Initializable{
         try{
             Connection conn= new DatabaseConnection().getConnection();
             Statement st=conn.createStatement();
-            st.executeUpdate(query);
+            int result = st.executeUpdate(query);
+            if(result>0){
+                clearForm();
+            }
         }
         catch (Exception ex)
         {
@@ -335,6 +433,34 @@ public class AccountingController implements Initializable{
             if(!empty){
                 setGraphic(cellButton);
             }
+        }
+    }
+
+    private ObservableList<AccountingByYear> getTotalByMonth(){
+        ObservableList<AccountingByYear> accountings = FXCollections.observableArrayList();
+        Connection conn= new DatabaseConnection().getConnection();
+        String query;
+        query = "SELECT EXTRACT(MONTH FROM balance_date) as month, sum(amount) as total " +
+                "FROM balance WHERE balance_type='"+cbByType.getValue()+"' " +
+                "GROUP BY DATE_PART('year', balance_date::date), DATE_PART('month', balance_date::date) " +
+                "HAVING DATE_PART('year', balance_date::date)="+txtByYear.getText();
+        try {
+            Statement st= conn.createStatement();
+            ResultSet rs=st.executeQuery(query);
+            AccountingByYear accounting;
+            while (rs.next()){
+                accounting = new AccountingByYear(
+                        rs.getString("month"),
+                        rs.getString("total"));
+
+                accountings.add(accounting);
+            }
+            return  accountings;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
         }
     }
 

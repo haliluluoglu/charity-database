@@ -16,13 +16,14 @@ import java.net.URL;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.ResourceBundle;
 
 
 public class MembersController implements Initializable{
 
-    private  String identityNo;
+    private  Integer identityNo;
 
     @FXML
     public Button btnSave= new Button();
@@ -56,10 +57,10 @@ public class MembersController implements Initializable{
     public ChoiceBox cbGender=new ChoiceBox();
 
     @FXML
-    public TextField txtBirthDay=new TextField();
+    public DatePicker txtBirthDate=new DatePicker();
 
     @FXML
-    public TextField txtStartDate=new TextField();
+    public DatePicker txtStartDate=new DatePicker();
 
     @FXML
     public TextField txtAddress=new TextField();
@@ -141,8 +142,8 @@ public class MembersController implements Initializable{
         txtIdentityNo.setText("");
         cbMaritalStatus.setValue(null);
         cbGender.setValue(null);
-        txtBirthDay.setText("");
-        txtStartDate.setText("");
+        txtBirthDate.setValue(null);
+        txtStartDate.setValue(null);
         txtPhone.setText("");
         txtAddress.setText("");
         txtMail.setText("");
@@ -163,22 +164,19 @@ public class MembersController implements Initializable{
 
         }
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        txtMemID.setText(member.getMembershipID().toString());
         txtFName.setText(member.getFirstName());
         txtLName.setText(member.getLastName());
         txtIdentityNo.setText(member.getIdentityNo());
         cbMaritalStatus.setValue(maritalStat);
         cbGender.setValue(gender);
-        txtBirthDay.setText(dateFormat.format(member.getBirthDate()));
-        txtStartDate.setText(dateFormat.format(member.getStartDate()));
+        txtBirthDate.setValue(LocalDate.parse(dateFormat.format(member.getBirthDate())));
+        txtStartDate.setValue(LocalDate.parse(dateFormat.format(member.getStartDate())));
         txtPhone.setText(member.getPhoneNumber());
         txtAddress.setText(member.getAddress());
         txtMail.setText(member.getMail());
-
     }
 
     private void loadTable(Boolean filter){
-
         colMemID.setCellValueFactory(new PropertyValueFactory<>("membershipID"));
         colFName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         colLName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
@@ -187,10 +185,6 @@ public class MembersController implements Initializable{
         colGender.setCellValueFactory(new PropertyValueFactory<>("gender"));
         colBirthDate.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
         colStartDate.setCellValueFactory(new PropertyValueFactory<>("startDate"));
-//        colAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
-//        colPhoneNumber.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
-//        colEMail.setCellValueFactory(new PropertyValueFactory<>("mail"));
-
         colUpdate.setSortable(false);
         colUpdate.setCellValueFactory(
                 new Callback<TableColumn.CellDataFeatures<Members, Boolean>, ObservableValue<Boolean>>() {
@@ -231,44 +225,46 @@ public class MembersController implements Initializable{
     }
 
     private void insertRecord(){
-        String query = "INSERT INTO Member VALUES('"+
-                txtMemID.getText()+"','"+
+        String query = "INSERT INTO Members (membership_id, " +
+                "fname, lname, id_no, marital_stat, gender, birth_date, " +
+                "start_date, address, phone_num, email) VALUES("+
+                "nextval('member_no_seq'), '"+
                 txtFName.getText()+"','"+
                 txtLName.getText()+"','"+
                 txtIdentityNo.getText()+"','"+
                 cbMaritalStatus.getValue().toString().charAt(0)+"','"+
                 cbGender.getValue().toString().charAt(0)+"','"+
-                txtBirthDay.getText()+"',"+
-                txtStartDate.getText()+"',"+
+                txtBirthDate.getValue()+"','"+
+                txtStartDate.getValue()+"','"+
                 txtAddress.getText()+"','"+
                 txtPhone.getText()+"','"+
                 txtMail.getText()+"'"+
                 ")";
         executeQuery(query);
+
     }
 
     private void updateRecord(){
-        String query = "UPDATE Member SET "+
-                "membership_id='"+ txtMemID.getText()+"', "+
+        String query = "UPDATE Members SET "+
                 "fname='"+ txtFName.getText()+"', "+
                 "lname='"+txtLName.getText()+"', "+
                 "id_no='"+txtIdentityNo.getText()+"', "+
                 "marital_stat='"+cbMaritalStatus.getValue().toString().charAt(0)+"', "+
                 "gender='"+cbGender.getValue().toString().charAt(0)+"', "+
-                "bdate='"+txtBirthDay.getText()+"', "+
-                "start_date='"+txtStartDate.getText()+"', "+
+                "birth_date='"+txtBirthDate.getValue()+"', "+
+                "start_date='"+txtStartDate.getValue()+"', "+
                 "address='"+txtAddress.getText()+"', "+
                 "phone_num='"+txtPhone.getText()+"', "+
                 "email='"+txtMail.getText()+"' "+
-                " WHERE id_no='" + identityNo + "'";
+                " WHERE membership_id='" + identityNo + "'";
         executeQuery(query);
         clearForm();
         btnCancel.setVisible(false);
         identityNo=null;
     }
 
-    private void deleteRecord(String identityNo){
-        String query = "DELETE FROM Member WHERE id_no='"+identityNo+"'";
+    private void deleteRecord(Integer identityNo){
+        String query = "DELETE FROM Members WHERE membership_id='"+identityNo+"'";
         executeQuery(query);
     }
 
@@ -281,10 +277,6 @@ public class MembersController implements Initializable{
         if(filter){
             String condition="";
 
-            if(txtMemID.getText().length()>0){
-                condition+=condition!=""?" AND ":"";
-                condition+=" membership_id LIKE '"+txtMemID.getText()+"%'";
-            }
             if(txtFName.getText().length()>0){
                 condition+=condition!=""?" AND ":"";
                 condition+=" fname LIKE '"+txtFName.getText()+"%'";
@@ -313,20 +305,25 @@ public class MembersController implements Initializable{
                 condition+=condition!=""?" AND ":"";
                 condition+=" phone_num='"+txtPhone.getText()+"'";
             }
+            if(txtBirthDate.getValue()!=null){
+                condition+=condition!=""?" AND ":"";
+                condition+=" birth_date='"+txtBirthDate.getValue()+"'";
+            }
+            if(txtStartDate.getValue()!=null){
+                condition+=condition!=""?" AND ":"";
+                condition+=" start_date='"+txtStartDate.getValue()+"'";
+            }
             if(txtMail.getText().length()>0){
                 condition+=condition!=""?" AND ":"";
                 condition+=" email='"+txtMail.getText()+"'";
             }
             if(condition!="")
-                query += "WHERE "+condition;
+                query += "WHERE "+ condition;
         }
 
-        Statement st;
-        ResultSet rs;
-
         try {
-            st= conn.createStatement();
-            rs=st.executeQuery(query);
+            Statement st= conn.createStatement();
+            ResultSet rs=st.executeQuery(query);
             Members member;
             while (rs.next()){
 
@@ -352,11 +349,17 @@ public class MembersController implements Initializable{
         }
     }
 
-    private  void executeQuery(String query){
+    private void executeQuery(String query){
         try{
             Connection conn= new DatabaseConnection().getConnection();
             Statement st=conn.createStatement();
-            st.executeUpdate(query);
+            int result= st.executeUpdate(query);
+            if(result==0){
+                Alert alert = new Alert(Alert.AlertType.WARNING, st.getWarnings().getMessage(),ButtonType.CLOSE);
+                alert.showAndWait();
+            }else{
+                clearForm();
+            }
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -373,7 +376,7 @@ public class MembersController implements Initializable{
                 @Override
                 public void handle(ActionEvent t) {
                     Members member = (Members) EditButtonCell.this.getTableView().getItems().get(EditButtonCell.this.getIndex());
-                    identityNo=member.getIdentityNo();
+                    identityNo=member.getMembershipID();
                     btnCancel.setVisible(true);
                     btnClear.setVisible(false);
                     loadForm(member);
@@ -404,7 +407,7 @@ public class MembersController implements Initializable{
                     alert.showAndWait();
 
                     if (alert.getResult() == ButtonType.YES) {
-                        deleteRecord(member.getIdentityNo());
+                        deleteRecord(member.getMembershipID());
                         loadTable(false);
                         clearForm();
                     }

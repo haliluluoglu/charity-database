@@ -13,41 +13,41 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="apLogin" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.MainController">
-   <children>
-      <ImageView fitHeight="600.0" fitWidth="814.0" layoutY="3.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../images/bg.jpg" />
-         </image>
-      </ImageView>
-      <GridPane layoutX="51.0" layoutY="52.0" prefHeight="108.0" prefWidth="284.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Username" textAlignment="CENTER">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <TextField fx:id="txtUsername" prefHeight="31.0" prefWidth="142.0" GridPane.columnIndex="1" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Password" GridPane.rowIndex="1">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-             <PasswordField fx:id="txtPassword" prefHeight="31.0" prefWidth="142.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-             <Button fx:id="btnLogin" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#checkLogin" prefHeight="17.0" prefWidth="142.0" text="Login" GridPane.columnIndex="1" GridPane.rowIndex="2">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Button>
-         </children>
-      </GridPane>
-   </children>
+    <children>
+        <ImageView fitHeight="600.0" fitWidth="814.0" layoutY="3.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../images/bg.jpg" />
+            </image>
+        </ImageView>
+        <GridPane layoutX="51.0" layoutY="52.0" prefHeight="108.0" prefWidth="284.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Username" textAlignment="CENTER">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <TextField fx:id="txtUsername" prefHeight="31.0" prefWidth="142.0" GridPane.columnIndex="1" />
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Password" GridPane.rowIndex="1">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+                <PasswordField fx:id="txtPassword" prefHeight="31.0" prefWidth="142.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Button fx:id="btnLogin" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#checkLogin" prefHeight="17.0" prefWidth="142.0" text="Login" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Button>
+            </children>
+        </GridPane>
+    </children>
 </AnchorPane>

@@ -11,11 +11,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 import java.net.URL;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.ResourceBundle;
 
@@ -36,10 +38,9 @@ public class EmployeeController implements Initializable{
     @FXML
     public Button btnSearch= new Button();
 
-
     // Form Elements Start
     @FXML
-    public TextField txtDeptID=new TextField();
+    public ComboBox<Department> cbDepartment =new ComboBox<Department>();
 
     @FXML
     public TextField txtFName=new TextField();
@@ -57,10 +58,10 @@ public class EmployeeController implements Initializable{
     public ChoiceBox cbGender=new ChoiceBox();
 
     @FXML
-    public TextField txtBirthDay=new TextField();
+    public DatePicker txtBirthDate=new DatePicker();
 
     @FXML
-    public TextField txtStartDay=new TextField();
+    public DatePicker txtStartDate=new DatePicker();
 
     @FXML
     public TextField txtSalary=new TextField();
@@ -112,10 +113,21 @@ public class EmployeeController implements Initializable{
     public TableColumn<Employee,Boolean> colDelete;
     // TableView End
 
+    @FXML
+    Button btnShowEmployee =new Button();
+
+    @FXML
+    Label lblEmpInfo =new Label();
+
+    @FXML
+    TextField txtEmpId=new TextField();
+
+
 
     @Override
     public  void  initialize(URL location, ResourceBundle resources){
         loadTable(false);
+        loadDepartment();
     }
 
     public void saveEmployeeForm(ActionEvent event)  {
@@ -143,15 +155,44 @@ public class EmployeeController implements Initializable{
         btnCancel.setVisible(false);
     }
 
+    public void showEmpInfo(ActionEvent event)  {
+        if(txtEmpId.getText().length()>0){
+            Connection conn= new DatabaseConnection().getConnection();
+            String query= "SELECT public.recordc('"+txtEmpId.getText()+"')";
+            try {
+                Statement st= conn.createStatement();
+                ResultSet rs=st.executeQuery(query);
+                SQLWarning warning = st.getWarnings();
+                while (warning!=null){
+                    String message=warning.getMessage();
+                    lblEmpInfo.getStyleClass().remove("lbl-error");
+                    lblEmpInfo.getStyleClass().remove("lbl-default");
+                    if(message.indexOf("NULL")>0){
+                        lblEmpInfo.setText("Sorry, specified \"Employee Id\" not found in database.");
+                        lblEmpInfo.getStyleClass().add("lbl-error");
+                    }
+                    else{
+                        lblEmpInfo.setText(message);
+                        lblEmpInfo.getStyleClass().add("lbl-default");
+                    }
+                    warning=warning.getNextWarning();
+                }
+            }
+            catch (Exception ex){
+                ex.printStackTrace();
+            }
+        }
+    }
+
     private void clearForm(){
-        txtDeptID.setText("");
+        cbDepartment.setValue(null);
         txtFName.setText("");
         txtLName.setText("");
         txtIdentityNo.setText("");
         cbMaritalStatus.setValue(null);
         cbGender.setValue(null);
-        txtBirthDay.setText("");
-        txtStartDay.setText("");
+        txtBirthDate.setValue(null);
+        txtStartDate.setValue(null);
         txtSalary.setText("");
         txtAddress.setText("");
         txtPhone.setText("");
@@ -174,19 +215,82 @@ public class EmployeeController implements Initializable{
 
         }
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        txtDeptID.setText(employee.getDeptID().toString());
+        cbDepartment.setValue(getDepartment(employee.getDeptID()));
         txtFName.setText(employee.getFname());
         txtLName.setText(employee.getLname());
         txtIdentityNo.setText(employee.getIdNo());
         cbMaritalStatus.setValue(maritalStat);
         cbGender.setValue(gender);
-        txtBirthDay.setText(dateFormat.format(employee.getBirthDate()));
-        txtStartDay.setText(dateFormat.format(employee.getStartDate()));
+        txtBirthDate.setValue(LocalDate.parse(dateFormat.format(employee.getBirthDate())));
+        txtStartDate.setValue(LocalDate.parse(dateFormat.format(employee.getStartDate())));
         txtSalary.setText(employee.getSalary().toString());
         txtAddress.setText(employee.getAddress());
         txtPhone.setText(employee.getPhoneNum());
         txtMail.setText(employee.getEmail());
         txtTitle.setText(employee.getTitle());
+    }
+
+    private  void loadDepartment() {
+
+        ObservableList<Department> departments = FXCollections.observableArrayList();
+        Connection conn = new DatabaseConnection().getConnection();
+
+        String query = "SELECT * FROM department";
+
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
+
+            while (rs.next()) {
+                Department department = new Department(
+                        rs.getInt("dept_id"),
+                        rs.getString("dept_name"),
+                        rs.getString("dept_mgr_id"));
+                departments.add(department);
+            }
+            cbDepartment.setItems(departments);
+
+            cbDepartment.setConverter(new StringConverter<Department>() {
+
+                @Override
+                public String toString(Department department) {
+                    return department!=null? department.getDepartmentName():null;
+                }
+
+                @Override
+                public Department fromString(String string) {
+                    return cbDepartment.getItems().stream().filter(ap ->
+                            ap.getDepartmentName().equals(string)).findFirst().orElse(null);
+                }
+            });
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    private Department getDepartment(int deptId){
+        Connection conn= new DatabaseConnection().getConnection();
+        Department department=null;
+        String query= "SELECT * FROM department WHERE dept_id="+deptId;
+        try {
+            Statement st= conn.createStatement();
+            ResultSet rs=st.executeQuery(query);
+            boolean  deptAssigned=false;
+            while (rs.next() && deptAssigned==false){
+
+                department = new Department(
+                        rs.getInt("dept_id"),
+                        rs.getString("dept_name"),
+                        rs.getString("dept_mgr_id"));
+                deptAssigned=true;
+            }
+            return  department;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return null;
+        }
     }
 
     private void loadTable(Boolean filter){
@@ -199,9 +303,6 @@ public class EmployeeController implements Initializable{
         colBirthDate.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
         colStartDate.setCellValueFactory(new PropertyValueFactory<>("startDate"));
         colSalary.setCellValueFactory(new PropertyValueFactory<>("salary"));
-//        colAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
-//        colPhoneNumber.setCellValueFactory(new PropertyValueFactory<>("phoneNum"));
-//        colEMail.setCellValueFactory(new PropertyValueFactory<>("email"));
         colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
 
         colUpdate.setSortable(false);
@@ -244,34 +345,35 @@ public class EmployeeController implements Initializable{
     }
 
     private void insertRecord(){
-        String query = "INSERT INTO Employee VALUES('"+
-                txtDeptID.getText()+"','"+
+
+        String query = "INSERT INTO Employee VALUES("+
+                cbDepartment.getValue().getDepartmentID()+",'"+
                 txtFName.getText()+"','"+
                 txtLName.getText()+"','"+
                 txtIdentityNo.getText()+"','"+
                 cbMaritalStatus.getValue().toString().charAt(0)+"','"+
                 cbGender.getValue().toString().charAt(0)+"','"+
-                txtBirthDay.getText()+"',"+
-                txtStartDay.getText()+"',"+
-                txtSalary.getText()+"',"+
+                txtBirthDate.getValue()+"','"+
+                txtStartDate.getValue()+"',"+
+                txtSalary.getText()+",'"+
                 txtAddress.getText()+"','"+
                 txtPhone.getText()+"','"+
-                txtMail.getText()+"'"+
-                txtTitle.getText()+"'"+
-                ")";
+                txtMail.getText()+"', '"+
+                txtTitle.getText()+"')";
         executeQuery(query);
+
     }
 
     private void updateRecord(){
         String query = "UPDATE Employee SET "+
-                "deptID='"+ txtDeptID.getText()+"', "+
+                "dept_id="+ cbDepartment.getValue().getDepartmentID()+", "+
                 "fname='"+ txtFName.getText()+"', "+
                 "lname='"+txtLName.getText()+"', "+
                 "id_no='"+txtIdentityNo.getText()+"', "+
                 "marital_stat='"+cbMaritalStatus.getValue().toString().charAt(0)+"', "+
                 "gender='"+cbGender.getValue().toString().charAt(0)+"', "+
-                "bdate='"+txtBirthDay.getText()+"', "+
-                "sdate='"+txtStartDay.getText()+"', "+
+                "birth_date='"+txtBirthDate.getValue()+"', "+
+                "start_date='"+txtStartDate.getValue()+"', "+
                 "salary='"+txtSalary.getText()+"', "+
                 "address='"+txtAddress.getText()+"', "+
                 "phone_num='"+txtPhone.getText()+"', "+
@@ -298,9 +400,9 @@ public class EmployeeController implements Initializable{
         if(filter){
             String condition="";
 
-            if(txtDeptID.getText().length()>0){
+            if(cbDepartment.getValue()!=null){
                 condition+=condition!=""?" AND ":"";
-                condition+=" dept_id LIKE '"+txtDeptID.getText()+"%'";
+                condition+=" dept_id="+ cbDepartment.getValue().getDepartmentID();
             }
             if(txtFName.getText().length()>0){
                 condition+=condition!=""?" AND ":"";
@@ -322,13 +424,13 @@ public class EmployeeController implements Initializable{
                 condition+=condition!=""?" AND ":"";
                 condition+=" gender='"+cbGender.getValue().toString().charAt(0)+"'";
             }
-            if(txtBirthDay.getText().length()>0){
+            if(txtBirthDate.getValue()!=null){
                 condition+=condition!=""?" AND ":"";
-                condition+=" bdate='"+txtBirthDay.getText()+"%'";
+                condition+=" bdate='"+txtBirthDate.getValue()+"'";
             }
-            if(txtStartDay.getText().length()>0){
+            if(txtStartDate.getValue()!=null){
                 condition+=condition!=""?" AND ":"";
-                condition+=" start_date='"+txtStartDay.getText()+"%'";
+                condition+=" start_date='"+txtStartDate.getValue()+"'";
             }
             if(txtAddress.getText().length()>0){
                 condition+=condition!=""?" AND ":"";
@@ -350,15 +452,11 @@ public class EmployeeController implements Initializable{
                 query += "WHERE "+condition;
         }
 
-        Statement st;
-        ResultSet rs;
-
         try {
-            st= conn.createStatement();
-            rs=st.executeQuery(query);
+            Statement st= conn.createStatement();
+            ResultSet rs=st.executeQuery(query);
             Employee employee;
             while (rs.next()){
-
                 employee = new Employee(
                         rs.getInt("dept_id"),
                         rs.getString("fname"),
@@ -387,7 +485,13 @@ public class EmployeeController implements Initializable{
         try{
             Connection conn= new DatabaseConnection().getConnection();
             Statement st=conn.createStatement();
-            st.executeUpdate(query);
+            int result= st.executeUpdate(query);
+            if(result==0){
+                Alert alert = new Alert(Alert.AlertType.WARNING, st.getWarnings().getMessage(),ButtonType.CLOSE);
+                alert.showAndWait();
+            }else{
+                clearForm();
+            }
         }
         catch (Exception ex){
             ex.printStackTrace();

@@ -67,4 +67,5 @@ public class Accounting {
     public void setDepartmentID(Integer departmentID) {
         this.departmentID = departmentID;
     }
+
 }
